@@ -1,0 +1,47 @@
+.navbar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    padding-left: 140px;
+}
+
+.navbar-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e8eaed;
+    border-radius: 50%;
+}
+
+.navbar-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.app-icon {
+    display: grid;
+    grid-template-columns: repeat(3, 4px);
+    gap: 2px;
+    padding: 4px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.app-icon span {
+    width: 4px;
+    height: 4px;
+    background-color: #e8eaed;
+    border-radius: 50%;
+}

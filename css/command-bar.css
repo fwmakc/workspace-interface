@@ -1,0 +1,93 @@
+.command-container {
+    width: 100%;
+    max-width: 680px;
+    padding: 0 16px;
+}
+
+.command-bar {
+    width: 100%;
+    min-height: 46px;
+    background-color: #ffffff;
+    border-radius: 24px;
+    display: flex;
+    align-items: flex-start;
+    padding: 8px 16px;
+    box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+}
+
+.command-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #202124;
+    font-size: 16px;
+    font-family: inherit;
+    padding: 4px 12px 4px 4px;
+    resize: none;
+    overflow: hidden;
+    field-sizing: content;
+    min-height: 30px;
+    max-height: 200px;
+    line-height: 1.4;
+}
+
+.command-input::placeholder {
+    color: #70757a;
+    opacity: 1;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5f6368;
+    border-radius: 50%;
+}
+
+.icon-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .command-container {
+        max-width: 100%;
+        padding: 0 12px;
+    }
+
+    .command-bar {
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .command-container {
+        padding: 0 8px;
+    }
+
+    .command-bar {
+        padding: 6px 12px;
+        border-radius: 12px;
+    }
+
+    .command-input {
+        font-size: 14px;
+    }
+}

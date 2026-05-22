@@ -1,0 +1,74 @@
+.apps-menu {
+    display: grid;
+    position: fixed;
+    inset: 2vw;
+    border-radius: 8px;
+    border: 1px solid rgb(43 44 48);
+    z-index: 10;
+    padding: 80px 24px;
+    align-content: center;
+    justify-items: center;
+    gap: 4px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0s 0.35s;
+}
+
+.apps-menu.open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0s 0s;
+}
+
+.apps-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 20px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #e8eaed;
+    font-size: 14px;
+    transition: background-color 0.15s;
+}
+
+.apps-menu-item:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.apps-menu-item svg {
+    width: 36px;
+    height: 36px;
+    fill: #8ab4f8;
+}
+
+.apps-menu-close {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    color: #9aa0a6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.apps-menu-close:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: #e8eaed;
+}
+
+.apps-menu-close svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
+}

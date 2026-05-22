@@ -1,0 +1,48 @@
+.file-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 4px 0;
+}
+
+.file-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    color: #e8eaed;
+    border-radius: 16px;
+    padding: 4px 10px;
+    font-size: 13px;
+    max-width: 200px;
+    line-height: 1.3;
+}
+
+.file-chip-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-chip-remove {
+    background: none;
+    border: none;
+    color: #9aa0a6;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.file-chip-remove:hover {
+    color: #e8eaed;
+}
+
+.file-chip-remove svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+}

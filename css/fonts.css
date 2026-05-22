@@ -1,0 +1,29 @@
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('../fonts/noto_sans/NotoSans-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-stretch: 62.5% 100%;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    src: url('../fonts/noto_sans/NotoSans-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-stretch: 62.5% 100%;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Noto Sans Mono';
+    src: url('../fonts/noto_sans_mono/NotoSansMono-VariableFont_wdth,wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-stretch: 62.5% 100%;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Noto Color Emoji';
+    src: url('../fonts/noto_color_emoji/NotoColorEmoji-Regular.ttf') format('truetype');
+    font-style: normal;
+}
