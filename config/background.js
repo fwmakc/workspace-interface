@@ -1,5 +1,5 @@
 var BG_CONFIG = {
-    image: 'img/windows_black.jpg',
+    image: 'img/bg_dark.png',
     size: 'cover',
     position: 'center',
     repeat: 'no-repeat',
