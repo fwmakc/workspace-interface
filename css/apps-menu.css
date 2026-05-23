@@ -71,7 +71,8 @@
     flex-shrink: 0;
 }
 
-.apps-menu-close:hover {
+.apps-menu-close:hover,
+.apps-menu-close.focused {
     background-color: rgba(255,255,255,0.1);
     color: #e8eaed;
 }
@@ -103,6 +104,11 @@
     outline: none;
 }
 
+.apps-menu-search.focused {
+    outline: 2px solid #8ab4f8;
+    outline-offset: -2px;
+}
+
 .apps-menu-search::placeholder {
     color: #9aa0a6;
 }
@@ -130,7 +136,8 @@
     transition: background-color 0.15s, color 0.15s;
 }
 
-.apps-menu-bottom-btn:hover {
+.apps-menu-bottom-btn:hover,
+.apps-menu-bottom-btn.focused {
     background-color: rgba(255,255,255,0.1);
     color: #e8eaed;
 }

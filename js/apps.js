@@ -1,5 +1,5 @@
 App.appsMenu = (function() {
-    var menu, icon, grid, searchInput, columns;
+    var menu, icon, grid, searchInput, closeBtn, bottomBar, columns;
     var focusedItem = null;
 
     function getVisibleItems() {
@@ -9,6 +9,35 @@ App.appsMenu = (function() {
             if (all[i].style.display !== 'none') visible.push(all[i]);
         }
         return visible;
+    }
+
+    function getRows() {
+        var rows = [];
+        if (searchInput && closeBtn) {
+            rows.push([searchInput, closeBtn]);
+        }
+        var visible = getVisibleItems();
+        for (var i = 0; i < visible.length; i += columns) {
+            var row = [];
+            for (var j = i; j < Math.min(i + columns, visible.length); j++) {
+                row.push(visible[j]);
+            }
+            rows.push(row);
+        }
+        var bottomItems = bottomBar.querySelectorAll('.apps-menu-bottom-btn');
+        if (bottomItems.length > 0) {
+            rows.push(Array.prototype.slice.call(bottomItems));
+        }
+        return rows;
+    }
+
+    function findPosition(rows, item) {
+        for (var r = 0; r < rows.length; r++) {
+            for (var c = 0; c < rows[r].length; c++) {
+                if (rows[r][c] === item) return { row: r, col: c };
+            }
+        }
+        return null;
     }
 
     function clearFocus() {
@@ -37,8 +66,9 @@ App.appsMenu = (function() {
     }
 
     function closeMenu() {
-        menu.classList.remove('open');
         clearFocus();
+        if (searchInput) searchInput.blur();
+        menu.classList.remove('open');
         resetFilter();
     }
 
@@ -59,12 +89,12 @@ App.appsMenu = (function() {
         searchInput.placeholder = 'Поиск приложений...';
         topBar.appendChild(searchInput);
 
-        var closeBtn = document.createElement('button');
+        closeBtn = document.createElement('button');
         closeBtn.className = 'apps-menu-close';
         closeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
         closeBtn.addEventListener('click', function() {
             resetFilter();
-            setFocus(getVisibleItems()[0] || null);
+            clearFocus();
         });
         topBar.appendChild(closeBtn);
 
@@ -107,13 +137,14 @@ App.appsMenu = (function() {
                             tags.indexOf(query) !== -1;
                 item.style.display = match ? '' : 'none';
             }
-            var visible = getVisibleItems();
-            if (visible.indexOf(focusedItem) === -1) {
-                setFocus(visible.length > 0 ? visible[0] : null);
+            var rows = getRows();
+            var pos = focusedItem ? findPosition(rows, focusedItem) : null;
+            if (!pos) {
+                setFocus(rows.length > 0 ? rows[0][0] : null);
             }
         });
 
-        var bottomBar = document.createElement('div');
+        bottomBar = document.createElement('div');
         bottomBar.className = 'apps-menu-bottom-bar';
 
         var bottomActions = [
@@ -165,7 +196,7 @@ App.appsMenu = (function() {
             } else {
                 menu.classList.add('open');
                 resetFilter();
-                setFocus(getVisibleItems()[0] || null);
+                clearFocus();
             }
         });
 
@@ -183,24 +214,27 @@ App.appsMenu = (function() {
 
             if (isInputFocused) {
                 if (event.key === 'Enter') {
-                    var visible = getVisibleItems();
-                    if (visible.length > 0) {
-                        visible[0].click();
+                    var rows = getRows();
+                    if (rows.length > 0 && rows[0].length > 0) {
+                        rows[0][0].click();
                         event.preventDefault();
                     }
                     return;
                 }
                 if (event.key === 'ArrowDown') {
                     searchInput.blur();
-                    var visible = getVisibleItems();
-                    setFocus(visible.length > 0 ? visible[0] : null);
+                    var rows = getRows();
+                    setFocus(rows.length > 0 ? rows[0][0] : null);
                     event.preventDefault();
                     return;
                 }
                 if (event.key === 'ArrowUp') {
                     searchInput.blur();
-                    var visible = getVisibleItems();
-                    setFocus(visible.length > 0 ? visible[visible.length - 1] : null);
+                    var rows = getRows();
+                    if (rows.length > 0) {
+                        var lastRow = rows[rows.length - 1];
+                        setFocus(lastRow.length > 0 ? lastRow[lastRow.length - 1] : null);
+                    }
                     event.preventDefault();
                     return;
                 }
@@ -226,37 +260,63 @@ App.appsMenu = (function() {
 
             event.preventDefault();
 
-            var visible = getVisibleItems();
-            if (visible.length === 0) return;
+            var rows = getRows();
+            if (rows.length === 0) return;
 
-            if (event.key === 'Enter') {
-                if (focusedItem) focusedItem.click();
+            var pos = findPosition(rows, focusedItem);
+            if (!pos) {
+                if (event.key === 'ArrowUp') {
+                    var lastRow = rows[rows.length - 1];
+                    setFocus(lastRow.length > 0 ? lastRow[lastRow.length - 1] : null);
+                } else {
+                    setFocus(rows[0][0]);
+                }
                 return;
             }
 
-            var currentIndex = -1;
-            for (var i = 0; i < visible.length; i++) {
-                if (visible[i] === focusedItem) {
-                    currentIndex = i;
-                    break;
+            var r = pos.row;
+            var c = pos.col;
+            var nextR = r;
+            var nextC = c;
+
+            if (event.key === 'Enter') {
+                rows[r][c].click();
+                return;
+            }
+
+            if (event.key === 'ArrowRight') {
+                if (c + 1 < rows[r].length) {
+                    nextC = c + 1;
+                } else if (r + 1 < rows.length) {
+                    nextR = r + 1;
+                    nextC = 0;
+                } else {
+                    nextR = 0;
+                    nextC = 0;
+                }
+            } else if (event.key === 'ArrowLeft') {
+                if (c - 1 >= 0) {
+                    nextC = c - 1;
+                } else if (r - 1 >= 0) {
+                    nextR = r - 1;
+                    nextC = rows[nextR].length - 1;
+                } else {
+                    nextR = rows.length - 1;
+                    nextC = rows[nextR].length - 1;
+                }
+            } else if (event.key === 'ArrowDown') {
+                nextR = (r + 1) % rows.length;
+                nextC = Math.min(c, rows[nextR].length - 1);
+            } else if (event.key === 'ArrowUp') {
+                nextR = (r - 1 + rows.length) % rows.length;
+                if (nextR === 0) {
+                    nextC = 0;
+                } else {
+                    nextC = Math.min(c, rows[nextR].length - 1);
                 }
             }
 
-            if (currentIndex === -1) {
-                setFocus(visible[0]);
-                return;
-            }
-
-            var nextIndex = currentIndex;
-            if (event.key === 'ArrowRight') nextIndex = currentIndex + 1;
-            if (event.key === 'ArrowLeft') nextIndex = currentIndex - 1;
-            if (event.key === 'ArrowDown') nextIndex = currentIndex + columns;
-            if (event.key === 'ArrowUp') nextIndex = currentIndex - columns;
-
-            if (nextIndex < 0) nextIndex = 0;
-            if (nextIndex >= visible.length) nextIndex = visible.length - 1;
-
-            setFocus(visible[nextIndex]);
+            setFocus(rows[nextR][nextC]);
         });
     }
 
