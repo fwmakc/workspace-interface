@@ -42,10 +42,15 @@ App.keyboard = (function() {
             }
 
             if (appsOpen) {
-            if (event.key === 'Escape') {
-                    appsMenu.classList.remove('open');
+                if (event.key === 'Escape') {
+                    var activeElem = document.activeElement;
+                    if (activeElem && (activeElem.tagName === 'INPUT' || activeElem.tagName === 'TEXTAREA' || activeElem.isContentEditable)) {
+                        activeElem.blur();
+                    }
+                    if (App.appsMenu.close) App.appsMenu.close();
+                    event.preventDefault();
+                    return;
                 }
-                event.preventDefault();
                 return;
             }
 
@@ -66,7 +71,11 @@ App.keyboard = (function() {
                 var hasFiles = App.attach.getFiles().length > 0;
                 if (command.trim() !== '' || hasFiles) {
                     App.historyManager.save(command);
-                    console.log('Отправлена команда:', command);
+                    if (command.trim() !== '') {
+                        App.chat.activate();
+                        App.chat.addMessage(command, 'user');
+                        console.log('Отправлена команда:', command);
+                    }
                     if (hasFiles) {
                         var names = App.attach.getFiles().map(function(f) { return f.name; });
                         console.log('Прикреплены файлы:', names.join(', '));
@@ -75,7 +84,9 @@ App.keyboard = (function() {
                     App.attach.clear();
                     App.historyIndex = -1;
                     App.currentDraft = '';
-                    input.blur();
+                    if (!document.body.classList.contains('chat-active')) {
+                        input.blur();
+                    }
                 }
                 event.preventDefault();
                 return;
@@ -138,4 +149,5 @@ App.appsMenu.init();
 App.mic.init();
 App.speaker.init();
 App.clock.init();
+App.chat.init();
 App.keyboard.init();
