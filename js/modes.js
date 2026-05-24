@@ -6,6 +6,23 @@ App.modes = (function() {
     var modeMap = {};
     var activeIndex = -1;
 
+    var terminalCmds = ['ls','cd','pwd','mkdir','rm','cp','mv','cat','echo','grep','find','chmod','chown','touch','nano','vim','git','npm','node','python','pip','docker','kubectl','curl','wget','ssh','scp','tar','zip','unzip','apt','yum','brew','make','gcc','go','rustc','cargo'];
+
+    function detect(text) {
+        text = text.trim();
+        if (!text) return 'auto';
+
+        if (/^(https?:\/\/|www\.)/i.test(text)) return 'url';
+        if (/^[a-z0-9\-]+(\.[a-z0-9\-]+)+(\:[0-9]+)?(\/[^\s]*)?$/i.test(text) && !/\s/.test(text)) return 'url';
+
+        var firstWord = text.split(/\s+/)[0].toLowerCase();
+        if (terminalCmds.indexOf(firstWord) !== -1) return 'terminal';
+
+        if (/^[\d\s\.\,\+\-\*\/\(\)\%]+$/.test(text) && /[\+\-\*\/\%]/.test(text)) return 'calc';
+
+        return 'plan';
+    }
+
     function switchTo(modeId) {
         var cfg = modeMap[modeId];
         if (!cfg) return;
@@ -18,11 +35,24 @@ App.modes = (function() {
 
         var input = App.input;
         if (input.value.trim() === '') {
-            input.placeholder = cfg.placeholder || '';
-            App.currentPlaceholder = cfg.placeholder || '';
+            input.placeholder = cfg.placeholder || App.currentPlaceholder || '';
         }
 
         console.log('Режим:', cfg.name);
+    }
+
+    function autoSwitch(text) {
+        if (activeMode !== 'auto') return;
+        var detected = detect(text);
+        var cfg = modeMap[detected] || modeMap['auto'];
+        activeBtn.title = cfg.name;
+        activeBtn.innerHTML = cfg.icon;
+        App.input.placeholder = cfg.placeholder || App.currentPlaceholder || '';
+    }
+
+    function resetAuto() {
+        if (activeMode !== 'auto') return;
+        autoSwitch('');
     }
 
     function cycle() {
@@ -81,8 +111,12 @@ App.modes = (function() {
 
         App.utils.createOverlay(activeBtn, picker);
 
+        App.input.addEventListener('input', function() {
+            autoSwitch(App.input.value);
+        });
+
         switchTo(modes[0].id);
     }
 
-    return { init: init, switchTo: switchTo, cycle: cycle, getActive: getActive };
+    return { init: init, switchTo: switchTo, cycle: cycle, getActive: getActive, detect: detect, autoSwitch: autoSwitch, resetAuto: resetAuto };
 })();

@@ -59,6 +59,7 @@ App.keyboard = (function() {
                 App.attach.clear();
                 App.historyIndex = -1;
                 App.currentDraft = '';
+                App.modes.resetAuto();
                 input.blur();
                 event.preventDefault();
                 return;
@@ -84,6 +85,7 @@ App.keyboard = (function() {
                     App.attach.clear();
                     App.historyIndex = -1;
                     App.currentDraft = '';
+                    App.modes.resetAuto();
                     if (!document.body.classList.contains('chat-active')) {
                         input.blur();
                     }
