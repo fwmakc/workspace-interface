@@ -75,7 +75,11 @@ App.keyboard = (function() {
                     if (command.trim() !== '') {
                         App.chat.activate();
                         App.chat.addMessage(command, 'user');
-                        console.log('Отправлена команда:', command);
+                        var detectedMode = App.modes.getActive();
+                        if (detectedMode === 'auto') {
+                            detectedMode = App.modes.detect(command);
+                        }
+                        App.commands.execute(command, detectedMode);
                     }
                     if (hasFiles) {
                         var names = App.attach.getFiles().map(function(f) { return f.name; });

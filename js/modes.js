@@ -12,6 +12,8 @@ App.modes = (function() {
         text = text.trim();
         if (!text) return 'auto';
 
+        if (text.charAt(0) === '$') return 'terminal';
+
         if (/^(https?:\/\/|www\.)/i.test(text)) return 'url';
         if (/^[a-z0-9\-]+(\.[a-z0-9\-]+)+(\:[0-9]+)?(\/[^\s]*)?$/i.test(text) && !/\s/.test(text)) return 'url';
 
