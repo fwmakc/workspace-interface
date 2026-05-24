@@ -40,7 +40,7 @@ App.commands = (function() {
             if (result === '__CLEAR__') {
                 App.chat.clear();
             } else if (result) {
-                App.chat.addMessage(result, 'ai');
+                App.chat.addMessage(result, 'ai', 'terminal-output');
             }
             return;
         }

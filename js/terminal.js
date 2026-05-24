@@ -110,7 +110,7 @@ App.terminal = (function() {
                 if (!exists(target)) return 'ls: ' + (args[0] || '') + ': нет такого файла или каталога';
                 if (isFile(target)) return target.split('/').pop();
                 var items = ls(target);
-                return items.join('  ');
+                return items.join('\n');
             case 'cd':
                 if (!args[0]) { cwd = '/home/user'; return ''; }
                 var dest = resolve(args[0]);

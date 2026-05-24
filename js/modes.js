@@ -36,6 +36,11 @@ App.modes = (function() {
         picker.classList.remove('open');
 
         var input = App.input;
+        if (modeId === 'terminal') {
+            input.classList.add('terminal-mode');
+        } else {
+            input.classList.remove('terminal-mode');
+        }
         if (input.value.trim() === '') {
             input.placeholder = cfg.placeholder || App.currentPlaceholder || '';
         }
@@ -49,7 +54,13 @@ App.modes = (function() {
         var cfg = modeMap[detected] || modeMap['auto'];
         activeBtn.title = cfg.name;
         activeBtn.innerHTML = cfg.icon;
-        App.input.placeholder = cfg.placeholder || App.currentPlaceholder || '';
+        var input = App.input;
+        if (detected === 'terminal') {
+            input.classList.add('terminal-mode');
+        } else {
+            input.classList.remove('terminal-mode');
+        }
+        input.placeholder = cfg.placeholder || App.currentPlaceholder || '';
     }
 
     function resetAuto() {

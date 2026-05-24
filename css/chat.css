@@ -42,3 +42,8 @@ body.chat-active .chat-container {
     color: var(--text-primary);
     border-bottom-left-radius: 4px;
 }
+
+.chat-message.terminal-output {
+    font-family: 'Noto Sans Mono', monospace;
+    white-space: pre-wrap;
+}

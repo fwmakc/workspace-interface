@@ -15,10 +15,10 @@ App.chat = (function() {
         document.body.classList.add('chat-active');
     }
 
-    function addMessage(text, sender) {
+    function addMessage(text, sender, extraClass) {
         if (!container) return;
         var msg = document.createElement('div');
-        msg.className = 'chat-message ' + sender;
+        msg.className = 'chat-message ' + sender + (extraClass ? ' ' + extraClass : '');
         msg.textContent = text;
         container.appendChild(msg);
         container.scrollTop = container.scrollHeight;

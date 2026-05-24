@@ -32,6 +32,10 @@
     line-height: 1.4;
 }
 
+.command-input.terminal-mode {
+    font-family: 'Noto Sans Mono', monospace;
+}
+
 .command-input::placeholder {
     color: var(--text-muted);
     opacity: 1;
