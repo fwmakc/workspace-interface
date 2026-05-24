@@ -1,6 +1,38 @@
 App.appsMenu = (function() {
-    var menu, icon, grid, searchInput, closeBtn, bottomBar, columns;
+    var menu, icon, grid, searchInput, bottomBar, columns;
     var focusedItem = null;
+
+    function getAppsOrder() {
+        try {
+            return JSON.parse(localStorage.getItem('appsOrder')) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function setAppsOrder(order) {
+        localStorage.setItem('appsOrder', JSON.stringify(order));
+    }
+
+    function sortApps(apps) {
+        var order = getAppsOrder();
+        if (order.length === 0) return apps;
+        var map = {};
+        for (var i = 0; i < apps.length; i++) {
+            map[apps[i].id] = apps[i];
+        }
+        var sorted = [];
+        for (var j = 0; j < order.length; j++) {
+            if (map[order[j]]) {
+                sorted.push(map[order[j]]);
+                delete map[order[j]];
+            }
+        }
+        for (var k = 0; k < apps.length; k++) {
+            if (map[apps[k].id]) sorted.push(apps[k]);
+        }
+        return sorted;
+    }
 
     function getVisibleItems() {
         var all = grid.querySelectorAll('.apps-menu-item');
@@ -13,8 +45,8 @@ App.appsMenu = (function() {
 
     function getRows() {
         var rows = [];
-        if (searchInput && closeBtn) {
-            rows.push([searchInput, closeBtn]);
+        if (searchInput) {
+            rows.push([searchInput]);
         }
         var visible = getVisibleItems();
         for (var i = 0; i < visible.length; i += columns) {
@@ -89,14 +121,7 @@ App.appsMenu = (function() {
         searchInput.placeholder = 'Поиск приложений...';
         topBar.appendChild(searchInput);
 
-        closeBtn = document.createElement('button');
-        closeBtn.className = 'apps-menu-close';
-        closeBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-        closeBtn.addEventListener('click', function() {
-            resetFilter();
-            clearFocus();
-        });
-        topBar.appendChild(closeBtn);
+
 
         menu.appendChild(topBar);
 
@@ -106,17 +131,63 @@ App.appsMenu = (function() {
         menu.appendChild(gridContainer);
         grid = gridContainer;
 
-        cfg.apps.forEach(function(app) {
+        var sortedApps = sortApps(cfg.apps);
+        sortedApps.forEach(function(app) {
             var item = document.createElement('div');
             item.className = 'apps-menu-item';
+            item.setAttribute('data-id', app.id);
             item.innerHTML = app.icon + '<span>' + app.name + '</span>';
             item.setAttribute('data-name', app.name || '');
             item.setAttribute('data-description', app.description || '');
             item.setAttribute('data-tags', (app.tags || []).join(' '));
+            item.setAttribute('draggable', 'true');
             item.addEventListener('click', function() {
                 console.log('Открыто приложение:', app.id);
                 closeMenu();
             });
+            item.addEventListener('dragstart', function(e) {
+                e.dataTransfer.setData('text/plain', app.id);
+                e.dataTransfer.effectAllowed = 'copy';
+                item.classList.add('dragging');
+            });
+            item.addEventListener('dragend', function() {
+                item.classList.remove('dragging');
+            });
+
+            item.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                App.dock.showMenu(e.clientX, e.clientY, [
+                    { label: 'Добавить в док', action: function() { App.dock.pin(app.id); } }
+                ]);
+            });
+
+            var appLongPressTimer;
+            var appStartX, appStartY;
+            item.addEventListener('touchstart', function(e) {
+                if (e.touches.length !== 1) return;
+                appStartX = e.touches[0].clientX;
+                appStartY = e.touches[0].clientY;
+                appLongPressTimer = setTimeout(function() {
+                    App.dock.showMenu(appStartX, appStartY, [
+                        { label: 'Добавить в док', action: function() { App.dock.pin(app.id); } }
+                    ]);
+                }, 600);
+            });
+            item.addEventListener('touchend', function() {
+                clearTimeout(appLongPressTimer);
+            });
+            item.addEventListener('touchmove', function(e) {
+                if (e.touches.length !== 1) {
+                    clearTimeout(appLongPressTimer);
+                    return;
+                }
+                var dx = Math.abs(e.touches[0].clientX - appStartX);
+                var dy = Math.abs(e.touches[0].clientY - appStartY);
+                if (dx > 10 || dy > 10) {
+                    clearTimeout(appLongPressTimer);
+                }
+            });
+
             grid.appendChild(item);
         });
 
@@ -142,6 +213,25 @@ App.appsMenu = (function() {
             if (!pos) {
                 setFocus(rows.length > 0 ? rows[0][0] : null);
             }
+        });
+
+        grid.addEventListener('dragenter', function(e) {
+            var targetItem = e.target.closest('.apps-menu-item');
+            if (!targetItem) return;
+            var draggingItem = grid.querySelector('.apps-menu-item.dragging');
+            if (!draggingItem || targetItem === draggingItem) return;
+            grid.insertBefore(draggingItem, targetItem);
+        });
+
+        grid.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var order = [];
+            var items = grid.querySelectorAll('.apps-menu-item');
+            for (var i = 0; i < items.length; i++) {
+                order.push(items[i].getAttribute('data-id'));
+            }
+            setAppsOrder(order);
         });
 
         bottomBar = document.createElement('div');
@@ -205,6 +295,16 @@ App.appsMenu = (function() {
                 closeMenu();
             }
         });
+
+        document.addEventListener('dragover', function(e) {
+            if (!menu.classList.contains('open')) return;
+            var rect = menu.getBoundingClientRect();
+            if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+                closeMenu();
+            }
+        });
+
+
 
         document.addEventListener('keydown', function(event) {
             if (!menu.classList.contains('open')) return;

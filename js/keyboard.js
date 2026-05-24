@@ -150,4 +150,5 @@ App.mic.init();
 App.speaker.init();
 App.clock.init();
 App.chat.init();
+App.dock.init();
 App.keyboard.init();
