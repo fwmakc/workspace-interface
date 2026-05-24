@@ -7,6 +7,12 @@ App.chat = (function() {
         var spacer = document.createElement('div');
         spacer.className = 'chat-spacer';
         container.appendChild(spacer);
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.chat-message')) {
+                clearSelection();
+            }
+        });
     }
 
     function activate() {
@@ -50,8 +56,21 @@ App.chat = (function() {
         actions.appendChild(delBtn);
         msg.appendChild(actions);
 
+        msg.addEventListener('click', function(e) {
+            if (e.target.closest('.msg-actions')) return;
+            msg.classList.toggle('selected');
+        });
+
         container.appendChild(msg);
         container.scrollTop = container.scrollHeight;
+    }
+
+    function clearSelection() {
+        if (!container) return;
+        var selected = container.querySelectorAll('.chat-message.selected');
+        for (var i = 0; i < selected.length; i++) {
+            selected[i].classList.remove('selected');
+        }
     }
 
     function clear() {
@@ -62,5 +81,5 @@ App.chat = (function() {
         container.appendChild(spacer);
     }
 
-    return { init: init, activate: activate, addMessage: addMessage, clear: clear };
+    return { init: init, activate: activate, addMessage: addMessage, clear: clear, clearSelection: clearSelection };
 })();

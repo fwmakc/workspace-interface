@@ -64,8 +64,17 @@ body.chat-active .chat-container {
     gap: 4px;
 }
 
-.chat-message:hover .msg-actions {
+.chat-message:hover .msg-actions,
+.chat-message.selected .msg-actions {
     display: flex;
+}
+
+.chat-message.user.selected {
+    background-color: #c5d8f8;
+}
+
+.chat-message.ai.selected {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .msg-action-btn {
