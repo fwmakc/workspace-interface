@@ -30,7 +30,7 @@ App.chat = (function() {
         var messages = getMessages();
         if (messages.length === 0) return;
         if (focusedIndex === -1) {
-            focusedIndex = delta < 0 ? messages.length - 1 : 0;
+            focusedIndex = messages.length - 1;
         } else {
             focusedIndex += delta;
         }
