@@ -286,8 +286,8 @@ App.appsMenu = (function() {
             if (isInputFocused) {
                 if (event.key === 'Enter') {
                     var rows = getRows();
-                    if (rows.length > 0 && rows[0].length > 0) {
-                        rows[0][0].click();
+                    if (rows.length > 1 && rows[1].length > 0) {
+                        rows[1][0].click();
                         event.preventDefault();
                     }
                     return;
@@ -295,7 +295,7 @@ App.appsMenu = (function() {
                 if (event.key === 'ArrowDown') {
                     searchInput.blur();
                     var rows = getRows();
-                    setFocus(rows.length > 0 ? rows[0][0] : null);
+                    setFocus(rows.length > 1 ? rows[1][0] : null, 1, 0);
                     event.preventDefault();
                     return;
                 }
@@ -340,7 +340,7 @@ App.appsMenu = (function() {
                     var lastRow = rows[rows.length - 1];
                     setFocus(lastRow.length > 0 ? lastRow[lastRow.length - 1] : null, rows.length - 1, lastRow.length - 1);
                 } else {
-                    setFocus(rows[0][0], 0, 0);
+                    setFocus(rows.length > 1 ? rows[1][0] : null, 1, 0);
                 }
                 return;
             }
