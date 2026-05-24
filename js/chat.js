@@ -1,6 +1,54 @@
 App.chat = (function() {
     var container = null;
     var isActive = false;
+    var focusedIndex = -1;
+    var anchorIndex = -1;
+    var pageSize = 5;
+
+    function getMessages() {
+        if (!container) return [];
+        return container.querySelectorAll('.chat-message');
+    }
+
+    function updateSelection() {
+        var messages = getMessages();
+        for (var i = 0; i < messages.length; i++) {
+            messages[i].classList.remove('selected');
+        }
+        if (anchorIndex === -1 || focusedIndex === -1) return;
+        var start = Math.min(anchorIndex, focusedIndex);
+        var end = Math.max(anchorIndex, focusedIndex);
+        for (var j = start; j <= end; j++) {
+            if (messages[j]) messages[j].classList.add('selected');
+        }
+        if (messages[focusedIndex]) {
+            messages[focusedIndex].scrollIntoView({ block: 'nearest' });
+        }
+    }
+
+    function navigate(delta, extend) {
+        var messages = getMessages();
+        if (messages.length === 0) return;
+        if (focusedIndex === -1) {
+            focusedIndex = delta < 0 ? messages.length - 1 : 0;
+        } else {
+            focusedIndex += delta;
+        }
+        if (focusedIndex < 0) focusedIndex = 0;
+        if (focusedIndex >= messages.length) focusedIndex = messages.length - 1;
+        if (!extend) anchorIndex = focusedIndex;
+        updateSelection();
+    }
+
+    function jump(to, extend) {
+        var messages = getMessages();
+        if (messages.length === 0) return;
+        focusedIndex = to;
+        if (focusedIndex < 0) focusedIndex = 0;
+        if (focusedIndex >= messages.length) focusedIndex = messages.length - 1;
+        if (!extend) anchorIndex = focusedIndex;
+        updateSelection();
+    }
 
     function init() {
         container = document.getElementById('chatContainer');
@@ -24,6 +72,36 @@ App.chat = (function() {
             }
             e.clipboardData.setData('text/plain', texts.join('\n\n'));
             e.preventDefault();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!document.body.classList.contains('chat-active')) return;
+            if (!e.altKey) return;
+            var messages = getMessages();
+            if (messages.length === 0) return;
+
+            var extend = e.shiftKey;
+            var handled = true;
+
+            if (e.key === 'ArrowUp') {
+                navigate(-1, extend);
+            } else if (e.key === 'ArrowDown') {
+                navigate(1, extend);
+            } else if (e.key === 'PageUp') {
+                navigate(-pageSize, extend);
+            } else if (e.key === 'PageDown') {
+                navigate(pageSize, extend);
+            } else if (e.key === 'Home') {
+                jump(0, extend);
+            } else if (e.key === 'End') {
+                jump(messages.length - 1, extend);
+            } else {
+                handled = false;
+            }
+
+            if (handled) {
+                e.preventDefault();
+            }
         });
     }
 
@@ -70,6 +148,14 @@ App.chat = (function() {
 
         msg.addEventListener('click', function(e) {
             if (e.target.closest('.msg-actions')) return;
+            var messages = getMessages();
+            for (var i = 0; i < messages.length; i++) {
+                if (messages[i] === msg) {
+                    focusedIndex = i;
+                    anchorIndex = i;
+                    break;
+                }
+            }
             msg.classList.toggle('selected');
         });
 
@@ -83,6 +169,8 @@ App.chat = (function() {
         for (var i = 0; i < selected.length; i++) {
             selected[i].classList.remove('selected');
         }
+        focusedIndex = -1;
+        anchorIndex = -1;
     }
 
     function clear() {
@@ -91,6 +179,8 @@ App.chat = (function() {
         var spacer = document.createElement('div');
         spacer.className = 'chat-spacer';
         container.appendChild(spacer);
+        focusedIndex = -1;
+        anchorIndex = -1;
     }
 
     return { init: init, activate: activate, addMessage: addMessage, clear: clear, clearSelection: clearSelection };
