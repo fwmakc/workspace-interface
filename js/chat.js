@@ -19,7 +19,37 @@ App.chat = (function() {
         if (!container) return;
         var msg = document.createElement('div');
         msg.className = 'chat-message ' + sender + (extraClass ? ' ' + extraClass : '');
-        msg.textContent = text;
+
+        var textSpan = document.createElement('span');
+        textSpan.className = 'msg-text';
+        textSpan.textContent = text;
+        msg.appendChild(textSpan);
+
+        var actions = document.createElement('div');
+        actions.className = 'msg-actions';
+
+        var copyBtn = document.createElement('button');
+        copyBtn.className = 'msg-action-btn';
+        copyBtn.title = 'Копировать';
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/></svg>';
+        copyBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigator.clipboard.writeText(text);
+        });
+
+        var delBtn = document.createElement('button');
+        delBtn.className = 'msg-action-btn';
+        delBtn.title = 'Удалить';
+        delBtn.innerHTML = '&times;';
+        delBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            msg.remove();
+        });
+
+        actions.appendChild(copyBtn);
+        actions.appendChild(delBtn);
+        msg.appendChild(actions);
+
         container.appendChild(msg);
         container.scrollTop = container.scrollHeight;
     }
