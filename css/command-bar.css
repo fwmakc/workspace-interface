@@ -32,6 +32,28 @@
     line-height: 1.4;
 }
 
+.command-input {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.command-input::-webkit-scrollbar {
+    width: 6px;
+}
+
+.command-input::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.command-input::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+
+.command-input::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
 .command-input.terminal-mode {
     font-family: 'Noto Sans Mono', monospace;
 }
