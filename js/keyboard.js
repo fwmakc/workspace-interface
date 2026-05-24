@@ -18,14 +18,14 @@ App.keyboard = (function() {
     }
 
     function hasModifier(event) {
-        return event.ctrlKey || event.metaKey || event.altKey;
+        return event.ctrlKey || event.metaKey || event.altKey || event.shiftKey;
     }
 
     function init() {
         var input = App.input;
+        var appsMenu = document.getElementById('appsMenu');
 
         document.addEventListener('keydown', function(event) {
-            var appsMenu = document.getElementById('appsMenu');
             var appsOpen = appsMenu.classList.contains('open');
 
             if (APPS_CONFIG.hotkey && matchHotkey(event, APPS_CONFIG.hotkey)) {
@@ -139,16 +139,3 @@ App.keyboard = (function() {
 
     return { init: init };
 })();
-
-App.background.init();
-App.modes.init();
-App.placeholder.init();
-App.emoji.init();
-App.attach.init();
-App.appsMenu.init();
-App.mic.init();
-App.speaker.init();
-App.clock.init();
-App.chat.init();
-App.dock.init();
-App.keyboard.init();

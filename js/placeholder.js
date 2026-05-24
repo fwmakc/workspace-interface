@@ -18,7 +18,7 @@ App.placeholder = (function() {
             return p.replace('{greeting}', greeting);
         });
 
-        var lastIndex = parseInt(localStorage.getItem('lastPlaceholderIndex'), 10);
+        var lastIndex = parseInt(localStorage.getItem('cbui_lastPlaceholderIndex'), 10);
         var newIndex;
         if (prompts.length > 1) {
             do {
@@ -28,7 +28,7 @@ App.placeholder = (function() {
             newIndex = 0;
         }
 
-        localStorage.setItem('lastPlaceholderIndex', newIndex);
+        localStorage.setItem('cbui_lastPlaceholderIndex', newIndex);
         return prompts[newIndex];
     }
 

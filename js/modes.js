@@ -3,18 +3,15 @@ App.modes = (function() {
     var activeBtn = null;
     var picker = null;
     var modes = [];
+    var modeMap = {};
+    var activeIndex = -1;
 
     function switchTo(modeId) {
-        var cfg = null;
-        for (var i = 0; i < modes.length; i++) {
-            if (modes[i].id === modeId) {
-                cfg = modes[i];
-                break;
-            }
-        }
+        var cfg = modeMap[modeId];
         if (!cfg) return;
 
         activeMode = modeId;
+        activeIndex = modes.indexOf(cfg);
         activeBtn.title = cfg.name;
         activeBtn.innerHTML = cfg.icon;
         picker.classList.remove('open');
@@ -29,14 +26,7 @@ App.modes = (function() {
     }
 
     function cycle() {
-        var index = -1;
-        for (var i = 0; i < modes.length; i++) {
-            if (modes[i].id === activeMode) {
-                index = i;
-                break;
-            }
-        }
-        var next = (index + 1) % modes.length;
+        var next = (activeIndex + 1) % modes.length;
         switchTo(modes[next].id);
     }
 
@@ -46,6 +36,9 @@ App.modes = (function() {
 
     function init() {
         modes = MODES_CONFIG.modes;
+        for (var i = 0; i < modes.length; i++) {
+            modeMap[modes[i].id] = modes[i];
+        }
         var container = document.getElementById('barModes');
 
         picker = document.createElement('div');
@@ -86,11 +79,7 @@ App.modes = (function() {
         container.appendChild(picker);
         container.appendChild(activeBtn);
 
-        document.addEventListener('click', function(e) {
-            if (!picker.contains(e.target) && e.target !== activeBtn && !activeBtn.contains(e.target)) {
-                picker.classList.remove('open');
-            }
-        });
+        App.utils.createOverlay(activeBtn, picker);
 
         switchTo(modes[0].id);
     }

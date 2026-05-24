@@ -5,7 +5,7 @@
     inset: calc(50% + 2vh) auto 2vh auto;
     width: 600px;
     border-radius: 8px;
-    border: 1px solid rgb(43 44 48);
+    border: 1px solid var(--border-color);
     z-index: 10;
     visibility: hidden;
     opacity: 0;
@@ -41,7 +41,7 @@
     border-radius: 12px;
     cursor: pointer;
     text-decoration: none;
-    color: #e8eaed;
+    color: var(--text-primary);
     font-size: 14px;
     transition: background-color 0.15s;
     -webkit-touch-callout: none;
@@ -49,18 +49,18 @@
 
 .apps-menu-item:hover,
 .apps-menu-item.focused {
-    background-color: rgba(255,255,255,0.1);
+    background-color: var(--hover-bg);
 }
 
 .apps-menu-item svg {
     width: 36px;
     height: 36px;
-    fill: #8ab4f8;
+    fill: var(--accent-color);
 }
 
 .apps-menu-top-bar {
     padding: 16px 24px;
-    border-bottom: 1px solid rgb(43 44 48);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     gap: 12px;
@@ -69,28 +69,28 @@
 
 .apps-menu-search {
     flex: 1;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgb(43 44 48);
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 10px 14px;
-    color: #e8eaed;
+    color: var(--text-primary);
     font-size: 14px;
     font-family: inherit;
     outline: none;
 }
 
 .apps-menu-search.focused {
-    outline: 2px solid #8ab4f8;
+    outline: 2px solid var(--accent-color);
     outline-offset: -2px;
 }
 
 .apps-menu-search::placeholder {
-    color: #9aa0a6;
+    color: var(--text-secondary);
 }
 
 .apps-menu-bottom-bar {
     padding: 12px 24px;
-    border-top: 1px solid rgb(43 44 48);
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -104,18 +104,18 @@
     cursor: pointer;
     padding: 8px;
     border-radius: 50%;
-    color: #9aa0a6;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.15s, color 0.15s;
+    transition: var(--transition-fast), color 0.15s;
     -webkit-touch-callout: none;
 }
 
 .apps-menu-bottom-btn:hover,
 .apps-menu-bottom-btn.focused {
-    background-color: rgba(255,255,255,0.1);
-    color: #e8eaed;
+    background-color: var(--hover-bg);
+    color: var(--text-primary);
 }
 
 .apps-menu-bottom-btn svg {

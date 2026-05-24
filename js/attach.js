@@ -40,6 +40,7 @@ App.attach = (function() {
     function init() {
         var btn = document.getElementById('attachBtn');
         var fileInput = document.getElementById('fileInput');
+        var bar = document.querySelector('.command-bar');
 
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -52,6 +53,24 @@ App.attach = (function() {
             }
             render();
             fileInput.value = '';
+        });
+
+        bar.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            bar.classList.add('drag-over');
+        });
+        bar.addEventListener('dragleave', function(e) {
+            bar.classList.remove('drag-over');
+        });
+        bar.addEventListener('drop', function(e) {
+            e.preventDefault();
+            bar.classList.remove('drag-over');
+            var droppedFiles = e.dataTransfer.files;
+            for (var i = 0; i < droppedFiles.length; i++) {
+                files.push(droppedFiles[i]);
+            }
+            render();
         });
     }
 

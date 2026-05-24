@@ -8,7 +8,7 @@ var App = {
 };
 
 try {
-    App.history = JSON.parse(localStorage.getItem('cmdHistory')) || [];
+    App.history = JSON.parse(localStorage.getItem('cbui_cmdHistory')) || [];
 } catch (e) {
     App.history = [];
 }

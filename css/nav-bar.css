@@ -16,12 +16,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #e8eaed;
+    color: var(--text-primary);
     border-radius: 50%;
 }
 
 .navbar-icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--hover-bg);
 }
 
 .navbar-icon svg {
@@ -42,6 +42,6 @@
 .app-icon span {
     width: 4px;
     height: 4px;
-    background-color: #e8eaed;
+    background-color: var(--text-primary);
     border-radius: 50%;
 }

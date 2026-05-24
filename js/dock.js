@@ -2,25 +2,22 @@ App.dock = (function() {
     var container = null;
     var contextMenu = null;
     var pinned = [];
+    var appMap = {};
 
     function load() {
         try {
-            pinned = JSON.parse(localStorage.getItem('dockPinned')) || [];
+            pinned = JSON.parse(localStorage.getItem('cbui_dockPinned')) || [];
         } catch (e) {
             pinned = [];
         }
     }
 
     function save() {
-        localStorage.setItem('dockPinned', JSON.stringify(pinned));
+        localStorage.setItem('cbui_dockPinned', JSON.stringify(pinned));
     }
 
     function findApp(appId) {
-        var apps = APPS_CONFIG.apps;
-        for (var i = 0; i < apps.length; i++) {
-            if (apps[i].id === appId) return apps[i];
-        }
-        return null;
+        return appMap[appId] || null;
     }
 
     function hideMenu() {
@@ -55,6 +52,9 @@ App.dock = (function() {
             var item = document.createElement('div');
             item.className = 'dock-item';
             item.title = app.name;
+            item.setAttribute('role', 'button');
+            item.setAttribute('tabindex', '0');
+            item.setAttribute('aria-label', app.name);
             item.setAttribute('draggable', 'true');
             item.innerHTML = app.icon + '<span>' + app.name + '</span>';
 
@@ -74,31 +74,10 @@ App.dock = (function() {
                 e.dataTransfer.effectAllowed = 'move';
             });
 
-            var longPressTimer;
-            var startX, startY;
-            item.addEventListener('touchstart', function(e) {
-                if (e.touches.length !== 1) return;
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-                longPressTimer = setTimeout(function() {
-                    showMenu(startX, startY, [
-                        { label: 'Убрать из дока', action: function() { unpin(appId); } }
-                    ]);
-                }, 600);
-            });
-            item.addEventListener('touchend', function() {
-                clearTimeout(longPressTimer);
-            });
-            item.addEventListener('touchmove', function(e) {
-                if (e.touches.length !== 1) {
-                    clearTimeout(longPressTimer);
-                    return;
-                }
-                var dx = Math.abs(e.touches[0].clientX - startX);
-                var dy = Math.abs(e.touches[0].clientY - startY);
-                if (dx > 10 || dy > 10) {
-                    clearTimeout(longPressTimer);
-                }
+            App.utils.makeLongPress(item, function(x, y) {
+                showMenu(x, y, [
+                    { label: 'Убрать из дока', action: function() { unpin(appId); } }
+                ]);
             });
 
             container.appendChild(item);
@@ -121,10 +100,14 @@ App.dock = (function() {
     }
 
     function init() {
+        var apps = APPS_CONFIG.apps;
+        for (var i = 0; i < apps.length; i++) {
+            appMap[apps[i].id] = apps[i];
+        }
         container = document.getElementById('dockBar');
 
         contextMenu = document.createElement('div');
-        contextMenu.className = 'context-menu';
+        contextMenu.className = 'context-menu glass-panel';
         document.body.appendChild(contextMenu);
 
         document.addEventListener('click', function(e) {
