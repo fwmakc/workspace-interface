@@ -26,7 +26,9 @@ body.chat-active .chat-container {
     font-size: 14px;
     line-height: 1.5;
     max-width: 80%;
-    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .chat-message.user {
