@@ -98,7 +98,7 @@ App.keyboard = (function() {
                 return;
             }
 
-            if (event.key === 'ArrowUp' && isFocused) {
+            if (event.key === 'ArrowUp' && isFocused && event.ctrlKey) {
                 if (App.history.length === 0) return;
                 if (App.historyIndex === -1) {
                     App.currentDraft = input.value;
@@ -112,7 +112,7 @@ App.keyboard = (function() {
                 return;
             }
 
-            if (event.key === 'ArrowDown' && isFocused) {
+            if (event.key === 'ArrowDown' && isFocused && event.ctrlKey) {
                 if (App.historyIndex === -1) return;
                 if (App.historyIndex < App.history.length - 1) {
                     App.historyIndex++;
