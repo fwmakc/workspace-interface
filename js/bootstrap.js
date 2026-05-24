@@ -9,6 +9,7 @@
     App.speaker.init();
     App.clock.init();
     App.chat.init();
+    App.terminal.init();
     App.dock.init();
     App.keyboard.init();
 })();

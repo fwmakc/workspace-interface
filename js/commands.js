@@ -36,7 +36,12 @@ App.commands = (function() {
         }
         if (mode === 'terminal' || command.trim().charAt(0) === '$') {
             var processed = processTerminal(command);
-            App.chat.addMessage(processed, 'ai');
+            var result = App.terminal.execute(processed);
+            if (result === '__CLEAR__') {
+                App.chat.clear();
+            } else if (result) {
+                App.chat.addMessage(result, 'ai');
+            }
             return;
         }
         console.log('Отправлена команда:', command);

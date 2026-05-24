@@ -24,5 +24,13 @@ App.chat = (function() {
         container.scrollTop = container.scrollHeight;
     }
 
-    return { init: init, activate: activate, addMessage: addMessage };
+    function clear() {
+        if (!container) return;
+        container.innerHTML = '';
+        var spacer = document.createElement('div');
+        spacer.className = 'chat-spacer';
+        container.appendChild(spacer);
+    }
+
+    return { init: init, activate: activate, addMessage: addMessage, clear: clear };
 })();
