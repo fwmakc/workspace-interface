@@ -13,6 +13,18 @@ App.chat = (function() {
                 clearSelection();
             }
         });
+
+        document.addEventListener('copy', function(e) {
+            var selected = container.querySelectorAll('.chat-message.selected');
+            if (selected.length === 0) return;
+            var texts = [];
+            for (var i = 0; i < selected.length; i++) {
+                var textSpan = selected[i].querySelector('.msg-text');
+                if (textSpan) texts.push(textSpan.textContent);
+            }
+            e.clipboardData.setData('text/plain', texts.join('\n\n'));
+            e.preventDefault();
+        });
     }
 
     function activate() {
