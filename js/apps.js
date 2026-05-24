@@ -99,8 +99,10 @@ App.appsMenu = (function() {
         searchInput.value = '';
         searchInput.blur();
         var allItems = grid.querySelectorAll('.apps-menu-item');
+        cachedVisibleItems = [];
         for (var i = 0; i < allItems.length; i++) {
             allItems[i].style.display = '';
+            cachedVisibleItems.push(allItems[i]);
         }
     }
 
@@ -178,6 +180,7 @@ App.appsMenu = (function() {
             });
 
             grid.appendChild(item);
+            cachedVisibleItems.push(item);
         });
 
         searchInput.addEventListener('input', function(e) {
