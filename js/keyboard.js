@@ -119,7 +119,7 @@ App.keyboard = (function() {
                     input.value = App.history[App.historyIndex];
                 } else {
                     App.historyIndex = -1;
-                    input.value = App.currentDraft;
+                    input.value = '';
                 }
                 setTimeout(function() { input.setSelectionRange(input.value.length, input.value.length); }, 0);
                 event.preventDefault();
