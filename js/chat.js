@@ -74,6 +74,10 @@ App.chat = (function() {
             e.preventDefault();
         });
 
+        App.input.addEventListener('focus', function() {
+            clearSelection();
+        });
+
         document.addEventListener('keydown', function(e) {
             if (!document.body.classList.contains('chat-active')) return;
             if (!e.altKey) return;
