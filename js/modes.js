@@ -26,9 +26,10 @@ App.modes = (function() {
         if (/^[\d\s\.\,\+\-\*\/\(\)\%]+$/.test(text) && /[\+\-\*\/\%]/.test(text)) return 'calc';
 
         // Заметки: списки и чекбоксы
-        if (/^[-+*]\s+[a-zA-Zа-яА-ЯёЁ]/.test(text)) return 'notes';
-        if (/^\[[^\]]*\]\s+[a-zA-Zа-яА-ЯёЁ]/.test(text)) return 'notes';
-        if (/^[☑✅☐☒]\s+[a-zA-Zа-яА-ЯёЁ]/.test(text)) return 'notes';
+        if (/^[-+*]\s*\p{L}/u.test(text)) return 'notes';
+        if (/^\[[^\]]*\]\s*\p{L}/u.test(text)) return 'notes';
+        if (/^[☑✅☐☒]\s*\p{L}/u.test(text)) return 'notes';
+        if (/^\d+\.\s*\p{L}/u.test(text)) return 'notes';
 
         return 'project';
     }
