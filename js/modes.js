@@ -17,6 +17,9 @@ App.modes = (function() {
         if (/^(https?:\/\/|www\.)/i.test(text)) return 'url';
         if (/^[a-z0-9\-]+(\.[a-z0-9\-]+)+(\:[0-9]+)?(\/[^\s]*)?$/i.test(text) && !/\s/.test(text)) return 'url';
 
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(text)) return 'contacts';
+        if (/^@/.test(text)) return 'contacts';
+
         var firstWord = text.split(/\s+/)[0].toLowerCase();
         if (terminalCmds.indexOf(firstWord) !== -1) return 'terminal';
 

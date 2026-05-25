@@ -23,23 +23,30 @@ var MODES_CONFIG = {
             placeholder: 'Введите URL...'
         },
         {
+            id: 'contacts',
+            name: 'Контакты',
+            hotkey: { key: 'Digit4', modifiers: ['alt'] },
+            icon: '<svg viewBox="0 0 24 24"><text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="currentColor" font-family="sans-serif">@</text></svg>',
+            placeholder: 'Введите email или @username...'
+        },
+        {
             id: 'calc',
             name: 'Калькулятор',
-            hotkey: { key: 'Digit4', modifiers: ['alt'] },
+            hotkey: { key: 'Digit5', modifiers: ['alt'] },
             icon: '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7.5 4h5v2h-5V7zm0 4h5v2h-5v-2zm-4-4h2v6h-2V7zm0 8h2v2h-2v-2zm3 2h2v-2h2v2h2v-2h-2v-2h2v-2h-2v2h-2v-2h-2v6z"/></svg>',
             placeholder: 'Вычислите: 2+2, 15% от 200...'
         },
         {
             id: 'notes',
             name: 'Заметки',
-            hotkey: { key: 'Digit5', modifiers: ['alt'] },
+            hotkey: { key: 'Digit6', modifiers: ['alt'] },
             icon: '<svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>',
             placeholder: 'Введите заметку...'
         },
         {
             id: 'terminal',
             name: 'Терминал',
-            hotkey: { key: 'Digit6', modifiers: ['alt'] },
+            hotkey: { key: 'Digit7', modifiers: ['alt'] },
             icon: '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z"/></svg>',
             placeholder: 'Введите команду...'
         }
