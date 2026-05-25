@@ -37,43 +37,6 @@ App.attach = (function() {
         render();
     }
 
-    function traverseDirectory(entry, onFile, onDone) {
-        if (entry.isFile) {
-            entry.file(function(file) {
-                onFile(file);
-                if (onDone) onDone();
-            });
-        } else if (entry.isDirectory) {
-            var reader = entry.createReader();
-            var allEntries = [];
-
-            function readBatch() {
-                reader.readEntries(function(entries) {
-                    if (entries.length === 0) {
-                        var pending = allEntries.length;
-                        if (pending === 0) {
-                            if (onDone) onDone();
-                            return;
-                        }
-                        allEntries.forEach(function(e) {
-                            traverseDirectory(e, onFile, function() {
-                                pending--;
-                                if (pending <= 0 && onDone) onDone();
-                            });
-                        });
-                    } else {
-                        allEntries = allEntries.concat(entries);
-                        readBatch();
-                    }
-                });
-            }
-
-            readBatch();
-        } else {
-            if (onDone) onDone();
-        }
-    }
-
     function init() {
         var btn = document.getElementById('attachBtn');
         var fileInput = document.getElementById('fileInput');
@@ -103,26 +66,11 @@ App.attach = (function() {
         bar.addEventListener('drop', function(e) {
             e.preventDefault();
             bar.classList.remove('drag-over');
-            var items = e.dataTransfer.items;
-            var pending = items.length;
-
-            function checkDone() {
-                pending--;
-                if (pending <= 0) render();
+            var droppedFiles = e.dataTransfer.files;
+            for (var i = 0; i < droppedFiles.length; i++) {
+                files.push(droppedFiles[i]);
             }
-
-            for (var i = 0; i < items.length; i++) {
-                var entry = items[i].webkitGetAsEntry ? items[i].webkitGetAsEntry() : null;
-                if (entry) {
-                    traverseDirectory(entry, function(file) {
-                        files.push(file);
-                    }, checkDone);
-                } else {
-                    var droppedFile = items[i].getAsFile();
-                    if (droppedFile) files.push(droppedFile);
-                    checkDone();
-                }
-            }
+            render();
         });
     }
 
