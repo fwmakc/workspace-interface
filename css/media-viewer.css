@@ -108,3 +108,52 @@
 .media-modal-close:hover {
     opacity: 1;
 }
+
+/* Навигация в модалке */
+.media-modal-prev,
+.media-modal-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    padding: 0;
+}
+
+.media-modal-prev:hover,
+.media-modal-next:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.media-modal-prev {
+    left: 16px;
+}
+
+.media-modal-next {
+    right: 16px;
+}
+
+.media-modal-counter {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 12px;
+    border-radius: 12px;
+    z-index: 2;
+    user-select: none;
+}

@@ -163,9 +163,7 @@ App.chat = (function() {
             var grid = document.createElement('div');
             grid.className = 'media-grid';
             for (var fi = 0; fi < files.length; fi++) {
-                var preview = App.mediaViewer.createPreview(files[fi], function(type, url, name) {
-                    App.mediaViewer.openModal(type, url, name);
-                });
+                var preview = App.mediaViewer.createPreview(files[fi], files, fi);
                 grid.appendChild(preview);
             }
             msg.appendChild(grid);
