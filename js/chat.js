@@ -15,7 +15,10 @@ App.chat = (function() {
         for (var i = 0; i < messages.length; i++) {
             messages[i].classList.remove('selected');
         }
-        if (anchorIndex === -1 || focusedIndex === -1) return;
+        if (anchorIndex === -1 || focusedIndex === -1) {
+            if (focusedIndex === -1) App.input.focus();
+            return;
+        }
         var start = Math.min(anchorIndex, focusedIndex);
         var end = Math.max(anchorIndex, focusedIndex);
         for (var j = start; j <= end; j++) {
@@ -30,12 +33,16 @@ App.chat = (function() {
         var messages = getMessages();
         if (messages.length === 0) return;
         if (focusedIndex === -1) {
-            focusedIndex = messages.length - 1;
+            if (delta < 0) {
+                focusedIndex = messages.length - 1;
+            } else {
+                return;
+            }
         } else {
             focusedIndex += delta;
+            if (focusedIndex < 0) focusedIndex = 0;
+            else if (focusedIndex >= messages.length) focusedIndex = -1;
         }
-        if (focusedIndex < 0) focusedIndex = 0;
-        if (focusedIndex >= messages.length) focusedIndex = messages.length - 1;
         if (!extend) anchorIndex = focusedIndex;
         updateSelection();
     }
