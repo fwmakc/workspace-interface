@@ -72,19 +72,27 @@ App.keyboard = (function() {
                 var hasFiles = App.attach.getFiles().length > 0;
                 if (command.trim() !== '' || hasFiles) {
                     App.historyManager.save(command);
-                    if (command.trim() !== '') {
+
+                    var messageText = command.trim();
+                    if (hasFiles) {
+                        var names = App.attach.getFiles().map(function(f) { return f.name; });
+                        var filesText = '[файлы: ' + names.join(', ') + ']';
+                        messageText = messageText ? messageText + '\n\n' + filesText : filesText;
+                    }
+
+                    if (messageText) {
                         App.chat.activate();
-                        App.chat.addMessage(command, 'user');
+                        App.chat.addMessage(messageText, 'user');
+                    }
+
+                    if (command.trim() !== '') {
                         var detectedMode = App.modes.getActive();
                         if (detectedMode === 'auto') {
                             detectedMode = App.modes.detect(command);
                         }
                         App.commands.execute(command, detectedMode);
                     }
-                    if (hasFiles) {
-                        var names = App.attach.getFiles().map(function(f) { return f.name; });
-                        console.log('Прикреплены файлы:', names.join(', '));
-                    }
+
                     input.value = '';
                     App.attach.clear();
                     App.historyIndex = -1;
