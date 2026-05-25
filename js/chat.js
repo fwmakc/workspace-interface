@@ -150,7 +150,11 @@ App.chat = (function() {
 
         var textSpan = document.createElement('span');
         textSpan.className = 'msg-text';
-        textSpan.textContent = text;
+        if (extraClass === 'terminal-output') {
+            textSpan.textContent = text;
+        } else {
+            textSpan.innerHTML = App.markdown.parse(text);
+        }
         msg.appendChild(textSpan);
 
         var actions = document.createElement('div');
