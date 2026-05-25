@@ -22,7 +22,7 @@ App.modes = (function() {
 
         if (/^[\d\s\.\,\+\-\*\/\(\)\%]+$/.test(text) && /[\+\-\*\/\%]/.test(text)) return 'calc';
 
-        return 'plan';
+        return 'project';
     }
 
     function switchTo(modeId) {
