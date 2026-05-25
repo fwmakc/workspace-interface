@@ -106,9 +106,9 @@ App.chat = (function() {
                 navigate(-pageSize, extend);
             } else if (e.key === 'PageDown') {
                 navigate(pageSize, extend);
-            } else if (e.key === 'Home') {
+            } else if (e.key === 'Home' || e.code === 'Home') {
                 jump(0, extend);
-            } else if (e.key === 'End') {
+            } else if (e.key === 'End' || e.code === 'End') {
                 jump(messages.length - 1, extend);
             } else {
                 handled = false;
