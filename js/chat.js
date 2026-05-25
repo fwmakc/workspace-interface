@@ -108,6 +108,23 @@ App.chat = (function() {
 
         document.addEventListener('keydown', function(e) {
             if (!document.body.classList.contains('chat-active')) return;
+
+            if (e.key === 'Enter' && !e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
+                if (document.activeElement !== App.input) {
+                    var selected = container.querySelectorAll('.chat-message.selected');
+                    if (selected.length > 0) {
+                        for (var si = 0; si < selected.length; si++) {
+                            var media = selected[si].querySelector('.media-preview img, .media-preview video');
+                            if (media) {
+                                media.click();
+                                e.preventDefault();
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
             if (!e.altKey) return;
             var messages = getMessages();
             if (messages.length === 0) return;
