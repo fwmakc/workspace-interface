@@ -1,0 +1,104 @@
+/* =========================================================
+   Markdown / Syntax Highlight Themes
+   Переключение: добавь класс .theme-light или .theme-dracula
+   на <body>. По умолчанию — тёмная тема (One Dark-like).
+   ========================================================= */
+
+/* ---------- Базовая тёмная тема (по умолчанию) ---------- */
+
+/* Общие markdown-элементы */
+.msg-text a       { color: #61afef; }
+.msg-text a:hover { opacity: 0.85; }
+
+.msg-text blockquote {
+    border-left-color: #61afef;
+    background: rgba(97, 175, 239, 0.08);
+}
+
+.msg-text code {
+    background: rgba(0, 0, 0, 0.25);
+    color: #abb2bf;
+}
+
+.msg-text pre {
+    background: #282c34;
+    border: 1px solid #3e4451;
+}
+
+.msg-text pre code {
+    color: #abb2bf;
+    background: none;
+}
+
+/* Подсветка токенов */
+.token.keyword  { color: #c678dd; }   /* фиолетовый */
+.token.string   { color: #98c379; }   /* зелёный */
+.token.number   { color: #d19a66; }   /* оранжевый */
+.token.comment  { color: #5c6370; font-style: italic; } /* серый */
+.token.function { color: #61afef; }   /* голубой */
+.token.builtin  { color: #e5c07b; }   /* жёлтый */
+.token.operator { color: #56b6c2; }   /* бирюзовый */
+
+/* ---------- Светлая тема (.theme-light) ---------- */
+.theme-light .msg-text a       { color: #4078f2; }
+.theme-light .msg-text a:hover { opacity: 0.85; }
+
+.theme-light .msg-text blockquote {
+    border-left-color: #4078f2;
+    background: rgba(64, 120, 242, 0.06);
+}
+
+.theme-light .msg-text code {
+    background: rgba(0, 0, 0, 0.06);
+    color: #383a42;
+}
+
+.theme-light .msg-text pre {
+    background: #fafafa;
+    border: 1px solid #e5e5e5;
+}
+
+.theme-light .msg-text pre code {
+    color: #383a42;
+    background: none;
+}
+
+.theme-light .token.keyword  { color: #a626a4; }
+.theme-light .token.string   { color: #50a14f; }
+.theme-light .token.number   { color: #986801; }
+.theme-light .token.comment  { color: #a0a1a7; font-style: italic; }
+.theme-light .token.function { color: #4078f2; }
+.theme-light .token.builtin  { color: #c18401; }
+.theme-light .token.operator { color: #0184bc; }
+
+/* ---------- Dracula (.theme-dracula) ---------- */
+.theme-dracula .msg-text a       { color: #8be9fd; }
+.theme-dracula .msg-text a:hover { opacity: 0.85; }
+
+.theme-dracula .msg-text blockquote {
+    border-left-color: #bd93f9;
+    background: rgba(189, 147, 249, 0.08);
+}
+
+.theme-dracula .msg-text code {
+    background: rgba(0, 0, 0, 0.25);
+    color: #f8f8f2;
+}
+
+.theme-dracula .msg-text pre {
+    background: #282a36;
+    border: 1px solid #44475a;
+}
+
+.theme-dracula .msg-text pre code {
+    color: #f8f8f2;
+    background: none;
+}
+
+.theme-dracula .token.keyword  { color: #ff79c6; }
+.theme-dracula .token.string   { color: #f1fa8c; }
+.theme-dracula .token.number   { color: #bd93f9; }
+.theme-dracula .token.comment  { color: #6272a4; font-style: italic; }
+.theme-dracula .token.function { color: #50fa7b; }
+.theme-dracula .token.builtin  { color: #8be9fd; }
+.theme-dracula .token.operator { color: #ff79c6; }

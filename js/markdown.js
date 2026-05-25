@@ -3,6 +3,56 @@ App.markdown = (function() {
         return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    function highlightCode(code, lang) {
+        code = escapeHtml(code);
+        var tokens = [];
+        var placeholder = '\0';
+
+        function stash(regex, type) {
+            code = code.replace(regex, function(match) {
+                var idx = tokens.length;
+                tokens.push({ type: type, text: match });
+                return placeholder + idx + placeholder;
+            });
+        }
+
+        // Строки (до комментариев, чтобы // внутри строк не считались комментариями)
+        stash(/("(?:\\.|[^"\\])*")/g, 'string');
+        stash(/('(?:\\.|[^'\\])*')/g, 'string');
+        stash(/(`(?:\\.|[^`\\])*`)/g, 'string');
+
+        // Комментарии
+        stash(/(\/\/.*$)/gm, 'comment');
+        stash(/(\/\*[\s\S]*?\*\/)/g, 'comment');
+
+        // Числа
+        stash(/\b(\d+(?:\.\d+)?)\b/g, 'number');
+
+        // Ключевые слова (JS + общие)
+        stash(/\b(function|var|let|const|if|else|for|while|return|class|extends|import|export|from|async|await|new|this|try|catch|throw|typeof|instanceof|in|of|void|delete|yield|default|switch|case|break|continue|debugger|with|do|goto|struct|union|enum|typedef|static|public|private|protected|interface|implements|package|namespace|module|using|def|lambda|pass|raise|except|finally|assert|del|global|nonlocal|yield|and|or|not|is|as|True|False|None|self|cls|int|float|bool|str|list|dict|tuple|set|bytes|print|input|len|range|enumerate|zip|map|filter|reduce|sum|min|max|abs|round|pow|divmod|chr|ord|bin|oct|hex|open|close|read|write|append|readline|readlines|seek|tell|flush|truncate|writelines|with|match|case)\b/g, 'keyword');
+
+        // Встроенные объекты / типы
+        stash(/\b(console|window|document|Math|JSON|Date|Array|Object|String|Number|Boolean|Promise|Set|Map|WeakMap|WeakSet|Symbol|BigInt|Error|RegExp|Date|ArrayBuffer|SharedArrayBuffer|DataView|Intl|Reflect|Proxy|Atomics|parseInt|parseFloat|isNaN|isFinite|decodeURI|decodeURIComponent|encodeURI|encodeURIComponent|eval|escape|unescape|require|exports|process|Buffer|__dirname|__filename|global|setTimeout|setInterval|clearTimeout|clearInterval|setImmediate|clearImmediate)\b/g, 'builtin');
+
+        // Функции (имя перед скобкой)
+        code = code.replace(/(\w+)(?=\()/g, function(match) {
+            var idx = tokens.length;
+            tokens.push({ type: 'function', text: match });
+            return placeholder + idx + placeholder;
+        });
+
+        // Операторы
+        stash(/(===|!==|==|!=|<=|>=|\+\+|--|=>|&&|\|\||<<|>>|>>>|[+\-*/%=<>!&|^~])/g, 'operator');
+
+        // Восстанавливаем токены
+        code = code.replace(new RegExp(placeholder + '(\\d+)' + placeholder, 'g'), function(match, idx) {
+            var token = tokens[parseInt(idx)];
+            return '<span class="token ' + token.type + '">' + token.text + '</span>';
+        });
+
+        return code;
+    }
+
     function parseInline(text) {
         var out = '';
         var i = 0;
@@ -90,11 +140,15 @@ App.markdown = (function() {
             if (trimmed.indexOf('```') === 0) {
                 if (inList) { result.push('</ul>'); inList = false; }
                 if (inCodeBlock) {
-                    result.push('<pre><code>' + escapeHtml(codeBlock.join('\n')) + '</code></pre>');
+                    var lang = codeBlock.lang || '';
+                    var codeHtml = lang ? highlightCode(codeBlock.join('\n'), lang) : escapeHtml(codeBlock.join('\n'));
+                    var langClass = lang ? ' class="language-' + lang + '"' : '';
+                    result.push('<pre><code' + langClass + '>' + codeHtml + '</code></pre>');
                     codeBlock = [];
                     inCodeBlock = false;
                 } else {
                     inCodeBlock = true;
+                    codeBlock.lang = trimmed.substring(3).trim();
                 }
                 continue;
             }
@@ -148,7 +202,10 @@ App.markdown = (function() {
 
         if (inList) { result.push('</ul>'); }
         if (inCodeBlock) {
-            result.push('<pre><code>' + escapeHtml(codeBlock.join('\n')) + '</code></pre>');
+            var lang = codeBlock.lang || '';
+            var codeHtml = lang ? highlightCode(codeBlock.join('\n'), lang) : escapeHtml(codeBlock.join('\n'));
+            var langClass = lang ? ' class="language-' + lang + '"' : '';
+            result.push('<pre><code' + langClass + '>' + codeHtml + '</code></pre>');
         }
 
         return result.join('\n');
