@@ -45,6 +45,7 @@ App.dock = (function() {
 
     function render() {
         container.innerHTML = '';
+        container.style.display = pinned.length ? '' : 'none';
         pinned.forEach(function(appId) {
             var app = findApp(appId);
             if (!app) return;
