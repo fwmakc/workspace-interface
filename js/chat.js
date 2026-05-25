@@ -29,19 +29,36 @@ App.chat = (function() {
         }
     }
 
-    function navigate(delta, extend) {
+    function navigate(delta, extend, isPaging) {
         var messages = getMessages();
         if (messages.length === 0) return;
         if (focusedIndex === -1) {
             if (delta < 0) {
                 focusedIndex = messages.length - 1;
+                if (isPaging) focusedIndex += delta;
             } else {
-                return;
+                if (isPaging) {
+                    focusedIndex = messages.length - 1;
+                    focusedIndex += delta;
+                } else {
+                    return;
+                }
             }
         } else {
             focusedIndex += delta;
+            if (focusedIndex < 0) {
+                focusedIndex = 0;
+            } else if (focusedIndex >= messages.length) {
+                if (!isPaging) {
+                    focusedIndex = -1;
+                } else {
+                    focusedIndex = messages.length - 1;
+                }
+            }
+        }
+        if (focusedIndex !== -1) {
             if (focusedIndex < 0) focusedIndex = 0;
-            else if (focusedIndex >= messages.length) focusedIndex = -1;
+            if (focusedIndex >= messages.length) focusedIndex = messages.length - 1;
         }
         if (!extend) anchorIndex = focusedIndex;
         updateSelection();
@@ -99,13 +116,13 @@ App.chat = (function() {
             var handled = true;
 
             if (e.key === 'ArrowUp') {
-                navigate(-1, extend);
+                navigate(-1, extend, false);
             } else if (e.key === 'ArrowDown') {
-                navigate(1, extend);
+                navigate(1, extend, false);
             } else if (e.key === 'PageUp') {
-                navigate(-pageSize, extend);
+                navigate(-pageSize, extend, true);
             } else if (e.key === 'PageDown') {
-                navigate(pageSize, extend);
+                navigate(pageSize, extend, true);
             } else if (e.key === 'Home' || e.code === 'Home') {
                 jump(0, extend);
             } else if (e.key === 'End' || e.code === 'End') {
