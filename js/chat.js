@@ -143,7 +143,7 @@ App.chat = (function() {
         document.body.classList.add('chat-active');
     }
 
-    function addMessage(text, sender, extraClass) {
+    function addMessage(text, sender, extraClass, files) {
         if (!container) return;
         var msg = document.createElement('div');
         msg.className = 'chat-message ' + sender + (extraClass ? ' ' + extraClass : '');
@@ -152,10 +152,24 @@ App.chat = (function() {
         textSpan.className = 'msg-text';
         if (extraClass === 'terminal-output') {
             textSpan.textContent = text;
+        } else if (files && files.length) {
+            if (text) textSpan.textContent = text;
         } else {
             textSpan.innerHTML = App.markdown.parse(text);
         }
         msg.appendChild(textSpan);
+
+        if (files && files.length > 0) {
+            var grid = document.createElement('div');
+            grid.className = 'media-grid';
+            for (var fi = 0; fi < files.length; fi++) {
+                var preview = App.mediaViewer.createPreview(files[fi], function(type, url, name) {
+                    App.mediaViewer.openModal(type, url, name);
+                });
+                grid.appendChild(preview);
+            }
+            msg.appendChild(grid);
+        }
 
         var actions = document.createElement('div');
         actions.className = 'msg-actions';

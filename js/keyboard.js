@@ -73,17 +73,8 @@ App.keyboard = (function() {
                 if (command.trim() !== '' || hasFiles) {
                     App.historyManager.save(command);
 
-                    var messageText = command.trim();
-                    if (hasFiles) {
-                        var names = App.attach.getFiles().map(function(f) { return f.name; });
-                        var filesText = '[файлы: ' + names.join(', ') + ']';
-                        messageText = messageText ? messageText + '\n\n' + filesText : filesText;
-                    }
-
-                    if (messageText) {
-                        App.chat.activate();
-                        App.chat.addMessage(messageText, 'user');
-                    }
+                    App.chat.activate();
+                    App.chat.addMessage(command.trim(), 'user', null, hasFiles ? App.attach.getFiles() : null);
 
                     if (command.trim() !== '') {
                         var detectedMode = App.modes.getActive();
