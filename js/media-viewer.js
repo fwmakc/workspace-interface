@@ -78,12 +78,14 @@ App.mediaViewer = (function() {
             video.src = url;
             video.controls = true;
             video.autoplay = true;
+            video.addEventListener('ended', next);
             modalContent.appendChild(video);
         } else if (type === 'audio') {
             var audio = document.createElement('audio');
             audio.src = url;
             audio.controls = true;
             audio.autoplay = true;
+            audio.addEventListener('ended', next);
             modalContent.appendChild(audio);
         } else {
             var span = document.createElement('span');
