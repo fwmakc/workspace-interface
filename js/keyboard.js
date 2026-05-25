@@ -112,6 +112,21 @@ App.keyboard = (function() {
                 return;
             }
 
+            // Individual mode hotkeys (only when input is focused)
+            if (isFocused) {
+                var modeHotkeyMatched = false;
+                for (var mi = 0; mi < MODES_CONFIG.modes.length; mi++) {
+                    var modeCfg = MODES_CONFIG.modes[mi];
+                    if (modeCfg.hotkey && matchHotkey(event, modeCfg.hotkey)) {
+                        App.modes.switchTo(modeCfg.id);
+                        event.preventDefault();
+                        modeHotkeyMatched = true;
+                        break;
+                    }
+                }
+                if (modeHotkeyMatched) return;
+            }
+
             if (event.key === 'ArrowDown' && isFocused && event.ctrlKey) {
                 if (App.historyIndex === -1) return;
                 if (App.historyIndex < App.history.length - 1) {
