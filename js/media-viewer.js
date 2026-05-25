@@ -33,12 +33,14 @@ App.mediaViewer = (function() {
             var img = document.createElement('img');
             img.src = url;
             img.alt = file.name;
+            img.draggable = false;
             img.addEventListener('click', function() { openModal(files, index); });
             container.appendChild(img);
         } else if (type === 'video') {
             var video = document.createElement('video');
             video.src = url;
             video.preload = 'metadata';
+            video.draggable = false;
             video.addEventListener('click', function() { openModal(files, index); });
             container.appendChild(video);
         } else if (type === 'audio') {
