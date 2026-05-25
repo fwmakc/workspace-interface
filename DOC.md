@@ -2,17 +2,15 @@
 
 ## Обзор
 
-**Command Bar UI** — это веб-интерфейс командной строки в стиле лаунчера ОС. Представляет собой одностраничное приложение (SPA), собранное на чистом HTML/CSS/JS без внешних зависимостей. Интерфейс включает командную строку с переключаемыми режимами, меню приложений, системный статус-бар, выбор эмодзи, прикрепление файлов и кастомизируемый фон.
+**Command Bar UI** — веб-интерфейс командной строки / лаунчер в стиле ОС. Чистый HTML/CSS/JS, без фреймворков.
 
 ---
 
 ## Архитектура
 
-Проект построен по модульному принципу: глобальный объект `App` служит контейнером для всех подсистем. Каждая подсистема реализована как IIFE (Immediately Invoked Function Expression), возвращающая публичный API.
+Модульная структура под глобальным объектом `App`. Каждый модуль — IIFE с публичным API.
 
-### Инициализация
-
-Все модули инициализируются в `js/keyboard.js` в конце файла:
+### Инициализация (`js/bootstrap.js`)
 
 ```js
 App.background.init();
@@ -24,98 +22,86 @@ App.appsMenu.init();
 App.mic.init();
 App.speaker.init();
 App.clock.init();
+App.chat.init();
+App.terminal.init();
+App.dock.init();
 App.keyboard.init();
 ```
 
 ### Глобальное состояние (`js/main.js`)
 
-Объект `App` хранит:
-- `input` — ссылка на DOM-элемент `<textarea id="cmdInput">`
-- `MAX_HISTORY` — лимит истории команд (50)
-- `history` — массив команд из `localStorage`
-- `historyIndex` — текущий индекс при навигации по истории
-- `currentDraft` — черновик текущего ввода
+- `input` — `<textarea id="cmdInput">`
+- `MAX_HISTORY` — лимит истории (50)
+- `history` / `historyIndex` / `currentDraft` — навигация по истории
 - `currentPlaceholder` — текущий placeholder
+- `setMdTheme(name)` / `getMdTheme()` — переключение темы Markdown (`dark` | `light` | `dracula`)
 
 ---
 
 ## Компоненты системы
 
-### 1. Конфигурационные модули (`config/`)
+### 1. Конфигурация (`config/`)
 
 | Файл | Назначение |
 |------|-----------|
-| `greetings.js` | Определяет временные интервалы приветствий (утро/день/вечер/ночь) и набор фраз-подсказок для placeholder |
-| `background.js` | Настройки фона: изображение, размер, позиция, overlay, blend mode, CSS-фильтры |
-| `apps.js` | Конфигурация меню приложений: количество колонок, фон, хоткей открытия, список приложений с иконками (SVG) |
-| `modes.js` | Конфигурация режимов командной строки: хоткей переключения, список режимов (авто, URL, калькулятор, план, терминал) с иконками и placeholder'ами |
+| `greetings.js` | Приветствия по времени суток, фразы для placeholder |
+| `background.js` | Фон: изображение, оверлей, фильтры |
+| `apps.js` | Приложения: список, иконки, bottom-экшены, хоткей меню |
+| `modes.js` | Режимы: `auto`, `project`, `url`, `calc`, `notes`, `terminal`. Индивидуальные хоткеи (`Alt+1..6`) и циклический (`Shift+Space`) |
 
-### 2. Ядро интерфейса (`js/`)
+### 2. Ядро (`js/`)
 
-#### `background.js` — Фоновое оформление
-- Применяет фоновое изображение к `<body>` через `BG_CONFIG`
-- Генерирует CSS-правило для `body::before` с цветом оверлея и `backdrop-filter`
-- Поддерживает все стандартные CSS-фильтры: blur, brightness, contrast, grayscale, hue-rotate, invert, opacity, saturate, sepia
+#### `utils.js` — Утилиты
+- `makeLongPress(el, callback)` — long-press для touch
+- `createOverlay(btn, overlay)` — клик вне закрывает оверлей
 
-#### `placeholder.js` — Динамический placeholder
-- Выбирает приветствие на основе текущего времени суток (`GREETINGS_CONFIG.periods`)
-- Случайным образом выбирает фразу из списка, избегая повтора предыдущей (сохраняет индекс в `localStorage`)
-- Подменяет `{greeting}` на актуальное приветствие
-- Placeholder скрывается при фокусе и возвращается при blur, если поле пустое
+#### `markdown.js` — Парсер Markdown
+- `parse(text)` → HTML: заголовки, списки, цитаты, ссылки, жирный/курсив, зачёркнутый, inline/block code
+- `highlightCode(code, lang)` — regex-based подсветка синтаксиса: `keyword`, `string`, `number`, `comment`, `function`, `builtin`, `operator`
 
-#### `history.js` — История команд
-- Сохраняет команду в `localStorage` (`cmdHistory`)
-- Игнорирует пустые команды и дубли подряд
-- Обрезает историю до `MAX_HISTORY` записей
+#### `commands.js` — Роутер команд
+- `execute(command, mode)` — калькулятор (`calc`) и терминал (`terminal`)
 
-#### `emoji.js` — Пикер эмодзи
-- Содержит статичный набор из ~130 эмодзи
-- Рендерит сетку кнопок в `#emojiPicker`
-- При клике вставляет эмодзи в текущую позицию курсора в `cmdInput`
-- Переключение видимости по клику на `#emojiBtn`, закрытие по клику вне
+#### `terminal.js` — Виртуальный терминал
+- In-memory ФС: `pwd`, `ls`, `cd`, `mkdir`, `touch`, `cat`, `echo`, `rm`, `clear`, `help`
+- Поддержка многострочных команд (`\` в конце строки)
 
-#### `attach.js` — Прикрепление файлов
-- Хранит массив выбранных файлов
-- По клику на `#attachBtn` открывает скрытый `<input type="file">`
-- Отображает прикреплённые файлы в `#fileList` в виде "чипсов" с кнопкой удаления
-- Публичные методы: `getFiles()`, `clear()`
+#### `chat.js` — Чат
+- `addMessage(text, sender, extraClass)` — отправка сообщений (user/ai)
+- Выделение сообщений, `Ctrl+C` для копирования выделенных
+- `Alt+↑/↓` — навигация по сообщениям (возврат к input)
+- `Alt+PgUp/PgDown` — постраничная навигация (только по истории, без возврата к input)
+- `Alt+Home/End` — к первому/последнему сообщению
+- Клик по сообщению выделяет, кнопки copy/delete на hover
+
+#### `dock.js` — Док
+- Закреплённые приложения из `localStorage` (`cbui_dockPinned`)
+- Drag-and-drop: pin/unpin, reorder
+- Скрывается автоматически, если пуст
+
+#### `keyboard.js` — Клавиатура
+- `Enter` — отправка, история, активация чата
+- `Ctrl+↑/↓` — навигация по истории команд
+- `Escape` — очистка, сброс
+- `Shift+Space` — цикл режимов
+- `Alt+1..6` — прямое переключение режима (только при фокусе на input)
+- `Ctrl+Space` — меню приложений
+- Автофокус input при любом символьном вводе
+
+#### `modes.js` — Режимы
+- `switchTo(modeId)` — ручное переключение
+- `autoSwitch(text)` / `detect(text)` — авто-определение по паттерну: URL, calc, `$` → terminal, иначе → project
+- `cycle()` — циклическое переключение
+
+#### `history.js` — История
+- `save(command)` — в `localStorage` (`cbui_cmdHistory`)
 
 #### `apps.js` — Меню приложений
-- Рендерит сетку приложений из `APPS_CONFIG` в `#appsMenu`
-- Добавляет кнопку закрытия (крестик)
-- Открытие/закрытие по клику на `#appsIcon`
-- Пока что при клике на приложение только логирует `console.log`
+- Поиск, навигация стрелками, `cachedVisibleItems`, `navPos`
+- Drag-and-drop для reorder
+- `bottomActions` из `config/apps.js`
 
-#### `mic.js` — Микрофон
-- Переключает состояние микрофона по клику на `#micBtn`
-- Меняет иконку (включено/выключено) и CSS-класс `active`
-- Публичный метод: `isActive()`
-
-#### `speaker.js` — Звук
-- Переключает состояние звука по клику на `#speakerBtn`
-- Меняет иконку (включено/выключено) и CSS-класс `active`
-- Публичный метод: `isActive()`
-
-#### `clock.js` — Часы
-- Обновляет `#clock` каждую секунду (`setInterval`)
-- Формат: `HH:MM` + `DD.MM.YYYY`
-
-#### `modes.js` — Режимы командной строки
-- Рендерит `#barModes`: активную кнопку (`activeBtn`) и выпадающий список (`modePicker`)
-- `switchTo(modeId)` — меняет иконку, placeholder, фокусирует поле ввода
-- `cycle()` — циклическое переключение режимов (Shift+Space по умолчанию)
-- `getActive()` — возвращает ID текущего режима
-- Placeholder режима применяется только если поле ввода пустое
-
-#### `keyboard.js` — Обработка клавиатуры
-Центральный модуль ввода. Обрабатывает:
-- **Ctrl+Space** — открыть/закрыть меню приложений (настраивается в `APPS_CONFIG.hotkey`)
-- **Shift+Space** — циклическое переключение режимов (настраивается в `MODES_CONFIG.cycleHotkey`)
-- **Escape** — очистить поле, сбросить историю/черновик, убрать фокус; если открыто меню приложений — закрыть его
-- **Enter** (без Shift) — отправить команду: сохранить в историю, залогировать команду и прикреплённые файлы, очистить поле
-- **ArrowUp/ArrowDown** — навигация по истории команд с сохранением черновика
-- **Автофокус** — любой символьный ввод (без модификаторов) автоматически фокусирует `cmdInput`
-- **Ctrl+V / Shift+Insert** — фокусирует поле для вставки
+#### `background.js`, `placeholder.js`, `emoji.js`, `attach.js`, `mic.js`, `speaker.js`, `clock.js` — см. предыдущие версии доки.
 
 ---
 
@@ -123,25 +109,21 @@ App.keyboard.init();
 
 ```
 body
-├── .header-container
-│   └── .command-container
-│       ├── .command-bar
-│       │   ├── .bar-modes        ← #barModes (режимы)
-│       │   ├── #cmdInput         ← textarea ввода
-│       │   └── .bar-actions
-│       │       ├── #emojiPicker  ← пикер эмодзи
-│       │       ├── #emojiBtn     ← кнопка эмодзи
-│       │       ├── #attachBtn    ← кнопка прикрепления
-│       │       └── #fileInput    ← скрытый input[type=file]
-│       ├── .file-list            ← #fileList (прикреплённые файлы)
-│       └── .header-panel
-│           ├── .navbar
-│           │   └── #appsIcon     ← иконка меню приложений
-│           └── .statusbar
-│               ├── #speakerBtn   ← звук
-│               ├── #micBtn       ← микрофон
-│               └── #clock        ← часы
-└── .apps-menu                    ← #appsMenu (меню приложений)
+├── .chat-container              ← #chatContainer (сообщения)
+└── .bottom-area
+    ├── .header-container
+    │   └── .command-container
+    │       ├── .command-bar
+    │       │   ├── .bar-modes    ← #barModes
+    │       │   ├── #cmdInput
+    │       │   └── .bar-actions
+    │       ├── .file-list        ← #fileList
+    │       └── .header-panel
+    │           ├── .navbar       ← #appsIcon
+    │           └── .statusbar    ← speaker, mic, clock
+    └── .dock-bar                 ← #dockBar (закреплённые)
+
+.apps-menu                        ← #appsMenu
 ```
 
 ---
@@ -150,41 +132,54 @@ body
 
 | Файл | Назначение |
 |------|-----------|
-| `fonts.css` | Подключение шрифтов Noto Sans, Noto Sans Mono, Noto Color Emoji |
-| `base.css` | Базовые стили, сброс, стили `body` с фоном и оверлеем |
-| `command-bar.css` | Командная строка, textarea, чипсы файлов |
-| `nav-bar.css` | Навбар с иконкой приложений |
-| `status-bar.css` | Статус-бар: иконки звука/микрофона, часы |
-| `apps-menu.css` | Меню приложений: сетка, анимации, кнопка закрытия |
-| `modes.css` | Режимы: активная кнопка, выпадающий список |
-| `emoji.css` | Пикер эмодзи: сетка, скролл, анимация |
-| `attach.css` | Стили чипсов прикреплённых файлов |
+| `base.css` | CSS-переменные, `body`, `.glass-panel`, flex-layout |
+| `command-bar.css` | Input, textarea, scrollbar input |
+| `nav-bar.css` | Навбар |
+| `status-bar.css` | Статус-бар |
+| `apps-menu.css` | Меню приложений |
+| `modes.css` | Режимы, picker |
+| `emoji.css` | Пикер эмодзи |
+| `attach.css` | Чипсы файлов |
+| `chat.css` | Сообщения, выделение, scrollbars |
+| `dock.css` | Док, контекстное меню |
+| `md-themes.css` | Темы подсветки Markdown: `dark`, `.theme-light`, `.theme-dracula` |
 
 ---
 
 ## Поток данных
 
-1. Пользователь вводит текст → `keyboard.js` ловит событие → фокус на `cmdInput`
-2. При необходимости выбирается режим через `modes.js` → меняется placeholder
-3. Можно прикрепить файлы через `attach.js` → отображаются в `#fileList`
-4. Можно вставить эмодзи через `emoji.js`
-5. При нажатии Enter → `keyboard.js` вызывает `historyManager.save()` + `attach.getFiles()` → вывод в `console.log`
-6. История хранится в `localStorage` (`cmdHistory`)
-7. Placeholder индекс тоже хранится в `localStorage` (`lastPlaceholderIndex`)
+1. Ввод → `keyboard.js` → фокус на `cmdInput`
+2. `modes.js` → авто-определение режима по тексту
+3. `attach.js` / `emoji.js` — файлы и эмодзи
+4. `Enter` → `history.js` + `commands.js` → `chat.js` (addMessage)
+5. `calc` → вычисление, `terminal` → `terminal.js`, иначе → просто сообщение
+6. Markdown рендерится через `markdown.js` с подсветкой синтаксиса
+7. История, dock, placeholder, тема — в `localStorage` (префикс `cbui_`)
+
+---
+
+## Хранилище (localStorage, префикс `cbui_`)
+
+| Ключ | Данные |
+|------|--------|
+| `cbui_cmdHistory` | История команд |
+| `cbui_dockPinned` | ID закреплённых в доке |
+| `cbui_appsOrder` | Порядок приложений |
+| `cbui_mdTheme` | Тема Markdown (`dark` / `light` / `dracula`) |
 
 ---
 
 ## Зависимости
 
-Проект не имеет внешних зависимостей. Все используемые шрифты и иконки (SVG) включены в репозиторий.
+Нет внешних зависимостей. Все шрифты и иконки (SVG) в репозитории.
 
 ---
 
 ## Возможные направления расширения
 
-- Реальная обработка команд (сейчас только `console.log`)
-- Интеграция Web Speech API для голосового ввода (`mic.js` сейчас только тоггл)
-- Драг-анд-дроп для файлов
-- Поддержка тем (светлая/тёмная) через CSS-переменные
-- Расширяемая система плагинов для режимов
-- Роутинг или открытие реальных приложений вместо заглушек
+- Реальная обработка URL/project режимов
+- Интеграция Web Speech API
+- Drag-and-drop файлов
+- Дополнительные темы подсветки
+- Плагины для режимов
+- Роутинг / открытие приложений
